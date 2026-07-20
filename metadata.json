@@ -1,0 +1,6 @@
+{
+  "name": "NutriOS AI",
+  "description": "India's biggest AI Health Super App offering a diet planner, grocery planner, doctor chat, recipe builder, child growth tracker, pregnancy tracker, senior citizen care, sleep, weight, and barcode scanners.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

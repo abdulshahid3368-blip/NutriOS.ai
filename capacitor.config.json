@@ -1,0 +1,6 @@
+{
+  "appId": "com.nutrios.app",
+  "appName": "NutriOS",
+  "webDir": "dist",
+  "bundledWebRuntime": false
+}

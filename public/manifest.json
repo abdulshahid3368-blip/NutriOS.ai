@@ -1,0 +1,49 @@
+{
+  "name": "NutriOS AI Health Operating System",
+  "short_name": "NutriOS",
+  "description": "India's advanced AI health & metabolic nutrition operating system.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080808",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["medical", "health", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "AI Diet Planner",
+      "url": "/?tab=ai-planner",
+      "description": "Create instant custom AI meal blueprints"
+    },
+    {
+      "name": "Health Trackers",
+      "url": "/?tab=trackers",
+      "description": "Log weight, water, and sleep metrics"
+    }
+  ]
+}

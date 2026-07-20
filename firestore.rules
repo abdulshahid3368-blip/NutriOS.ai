@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Catch-all default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isSignedIn() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'super_admin';
+    }
+
+    function isNotSettingOrUpdatingRole() {
+      return (resource == null && ( !('role' in request.resource.data) || request.resource.data.role == 'user' )) ||
+             (resource != null && ( !('role' in request.resource.data) || ( 'role' in resource.data && request.resource.data.role == resource.data.role ) ));
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow write: if isAdmin() || (isOwner(userId) && isNotSettingOrUpdatingRole());
+    }
+
+    // Admin Configs collection
+    match /admin_configs/{docId} {
+      allow read: if true; // Everyone can read configs to evaluate feature flags
+      allow write: if isAdmin(); // Only Admin can update configs/features
+    }
+  }
+}

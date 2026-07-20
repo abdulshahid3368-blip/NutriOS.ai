@@ -1,0 +1,51 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile with goal, health metrics and subscription status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "age": { "type": "number" },
+        "gender": { "type": "string" },
+        "height": { "type": "number" },
+        "weight": { "type": "number" },
+        "goal": { "type": "string" },
+        "dietType": { "type": "string" },
+        "streak": { "type": "number" },
+        "points": { "type": "number" },
+        "isPremium": { "type": "boolean" },
+        "subscriptionPlan": { "type": "string" },
+        "referralCode": { "type": "string" },
+        "language": { "type": "string" },
+        "role": { "type": "string" }
+      },
+      "required": ["id", "name", "email", "age", "gender", "height", "weight", "goal", "dietType", "language"]
+    },
+    "AdminSettings": {
+      "title": "AdminSettings",
+      "description": "System configuration with subscription tiers, pricing, coupons and users",
+      "type": "object",
+      "properties": {
+        "plans": { "type": "array" },
+        "adsEnabled": { "type": "boolean" },
+        "coupons": { "type": "array" },
+        "users": { "type": "array" }
+      },
+      "required": ["plans", "adsEnabled", "coupons", "users"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profiles database"
+    },
+    "/admin_configs/{docId}": {
+      "schema": "AdminSettings",
+      "description": "Global admin configuration setting document"
+    }
+  }
+}
