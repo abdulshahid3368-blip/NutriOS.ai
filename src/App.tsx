@@ -30,6 +30,8 @@ import {
   Sliders
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { auth, db } from './services/firebase';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 export default function App() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
@@ -115,17 +117,54 @@ export default function App() {
     }
   };
 
-  // Load from local storage
+  // Load from Firestore if authenticated
   useEffect(() => {
-    const cachedProfile = localStorage.getItem('nutrios_profile');
-    if (cachedProfile) {
-      const parsed = JSON.parse(cachedProfile);
-      setProfile(parsed);
-      setLanguage(parsed.language || 'en');
-      if (parsed.role === 'super_admin') {
-        setActiveTab('admin');
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        // Fetch profile from Firestore
+        if (db) {
+          try {
+            const userDocRef = doc(db, 'users', user.uid);
+            const docSnap = await getDoc(userDocRef);
+            if (docSnap.exists()) {
+              const profileData = docSnap.data() as UserProfile;
+              
+              // Bootstrap: Grant super_admin to the primary admin
+              if (user.email === 'abdulshahid3368@gmail.com' && profileData.role !== 'super_admin') {
+                console.log('[Auth] Bootstrapping super_admin role for admin user');
+                await updateDoc(userDocRef, { role: 'super_admin' });
+                profileData.role = 'super_admin';
+              }
+
+              console.log('[Auth] User profile loaded:', profileData);
+              setProfile(profileData);
+              localStorage.setItem('nutrios_profile', JSON.stringify(profileData));
+              setLanguage(profileData.language || 'en');
+              console.log('[Auth] Checking role for tab access:', profileData.role);
+              if (profileData.role === 'super_admin') {
+                setActiveTab('admin');
+              }
+            } else {
+              console.warn('[Auth] User document does not exist in Firestore:', user.uid);
+            }
+          } catch (err) {
+            console.error('Error fetching user profile:', err);
+          }
+        }
+      } else {
+        // Fallback to local storage if not authenticated (or handled otherwise)
+        const cachedProfile = localStorage.getItem('nutrios_profile');
+        if (cachedProfile) {
+          const parsed = JSON.parse(cachedProfile);
+          setProfile(parsed);
+          setLanguage(parsed.language || 'en');
+          if (parsed.role === 'super_admin') {
+            setActiveTab('admin');
+          }
+        }
       }
-    }
+    });
+
     const cachedDiet = localStorage.getItem('nutrios_diet');
     if (cachedDiet) {
       setDietPlan(JSON.parse(cachedDiet));
@@ -134,7 +173,10 @@ export default function App() {
     if (cachedWater) {
       setWaterDrank(parseInt(cachedWater) || 0);
     }
+
+    return () => unsubscribe();
   }, []);
+
 
   // Save to local storage on profile changes
   const updateProfile = (updated: UserProfile) => {

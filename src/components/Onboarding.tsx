@@ -59,23 +59,28 @@ export default function Onboarding({ language, onComplete }: OnboardingProps) {
     setAuthError(null);
     setLoading(true);
 
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       setAuthError('Please fill in both email and password.');
       setLoading(false);
       return;
     }
 
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
     try {
       if (isFirebaseConfigured && auth) {
         if (authMode === 'register') {
           // Firebase Sign Up
-          const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+          console.log('[Auth] Attempting Sign Up for:', trimmedEmail);
+          const userCredential = await createUserWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
           const user = userCredential.user;
           // Go to personal details
           setStep(3);
         } else {
           // Firebase Sign In
-          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          console.log('[Auth] Attempting Sign In for:', trimmedEmail);
+          const userCredential = await signInWithEmailAndPassword(auth, trimmedEmail, trimmedPassword);
           const user = userCredential.user;
           
           // Check if profile exists in Firestore
